@@ -1,0 +1,9 @@
+#Git
+# Git configuracion básica
+git config --global user.name "erik.churo"
+git config --global user.email "erik.churo@hotmail.com"
+git config --global core.editor vim
+# Precondicion tener la clave publica y privada en ~/.ssh
+git config --global core.sshCommand "ssh -i /home/worker/.ssh/id_rsa_git"
+#Clonar
+git clone git@my-server-ip:project.git
