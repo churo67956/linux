@@ -1,0 +1,38 @@
+# Subdominio
+Los subdominios (git.erikchuro.com) se deben crear como A records dentro de tu domino princial ( erikchuro.com).
+Este record debe apuntar a la dirección IP de dominio principal.
+#Virtual host
+Por cada subdominio crear un fichero en /etc/apache2/sites-available.
+Esta es la configuración, el ServerName debe coincidir con el nombre del dominio
+|---------
+<VirtualHost *:80>
+        ServerName test.my.address.com
+        ServerAdmin webmaster@my.address.com
+        DocumentRoot /var/www/test.my.address.com/
+        <Directory />
+                Options FollowSymLinks
+                AllowOverride None
+        </Directory>
+        <Directory /var/www/test.my.address.com/>
+                Options Indexes FollowSymLinks MultiViews
+                AllowOverride All
+                Order allow,deny
+                allow from all
+        </Directory>
+
+        ErrorLog ${APACHE_LOG_DIR}/test.my.address.com.error.log
+
+        # Possible values include: debug, info, notice, warn, error, crit,
+        # alert, emerg.
+        LogLevel warn
+
+        CustomLog ${APACHE_LOG_DIR}/test.my.address.com.access.log combined
+</VirtualHost>
+-----
+# Reiniciar apache
+sudo a2ensite test.my.address.com
+sudo systemctl restart apache2
+# Testing local
+Update /etc/hosts adding these domain name resorvers
+|-----
+localhost test.my.address.com
