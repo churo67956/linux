@@ -1,0 +1,49 @@
+import hashlib
+import yaml
+
+# Input file path
+input_file = "hosts.txt"
+
+# Initialize inventory structure
+inventory = {
+    "all": {
+        "children": {
+            "openwrt": {
+                "hosts": {}
+            },
+            "local": {
+                "hosts": {
+                    "localhost": {
+                        "ansible_connection": "local"
+                    }
+                }
+            }
+        }
+    }
+}
+
+# Read and process each line
+with open(input_file, "r") as f:
+    for line in f:
+        line = line.strip()
+        if not line or line.startswith("#"):
+            continue  # Skip empty lines or comments
+        try:
+            hostname, ip = line.split()
+        except ValueError:
+            print(f"⚠️ Skipping malformed line: {line}")
+            continue
+
+        password = hashlib.sha1(hostname.encode()).hexdigest()
+        inventory["all"]["children"]["openwrt"]["hosts"][ip] = {
+            "ansible_user": "root",
+            "ansible_password": password,
+            "ansible_connection": "raw",
+            "ansible_ssh_common_args": "-o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null"
+        }
+
+# Write to inventory.yml
+with open("inventory.yml", "w") as f:
+    yaml.dump(inventory, f, default_flow_style=False)
+
+print("✅ inventory.yml generated successfully.")
